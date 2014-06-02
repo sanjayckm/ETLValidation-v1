@@ -1,0 +1,131 @@
+﻿<script src="app/testProjectServices.js"></script>
+
+<div data-ng-controller="testProjectConnectionsCtrl" style="padding-top: 10px;">
+    <button data-ng-show="!showConnectionForm" data-ng-click="add()" class="btn btn-success">Add Connection</button>
+    <div data-ng-show="showConnectionForm" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        <h4 data-ng-if="!editing">New Database Connection</h4>
+        <h4 data-ng-if="editing">Edit Database Connection</h4>
+
+        <form class="form-horizontal" data-ng-submit="save(testProjectConnection)" role="form">
+            <div class="control-group">
+                <label class="control-label" for="txtProjectID">Project ID:</label>
+                <div class="controls">
+                    <input type="text" data-ng-model="testProjectConnection.TestProjectID" readonly="true" /> - {{testProject.TestProjectName}}
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="txtConnectionType">Connection Type:</label>
+                <div class="controls">
+                    <input type="radio" data-ng-model="testProjectConnection.ConnectionType" value="Source" />Source Connection
+                    <input type="radio" data-ng-model="testProjectConnection.ConnectionType" value="Destination" />Destination Connection
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="txtServerType">Server Type:</label>
+                <div class="controls">
+                    <input type="radio" data-ng-model="testProjectConnection.ServerType" value="SQL Server" />SQL Server
+                    <input type="radio" data-ng-model="testProjectConnection.ServerType" value="Oracle" />Oracle
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="txtServerIP">Server IP:</label>
+                <div class="controls">
+                    <input type="text" data-ng-model="testProjectConnection.ServerIP" required />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="txtDBName">Database [Catalog]:</label>
+                <div class="controls">
+                    <input type="text" data-ng-model="testProjectConnection.TestDBName" required />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="txtDBUserID">Database User ID:</label>
+                <div class="controls">
+                    <input type="text" data-ng-model="testProjectConnection.TestDBUserID" required />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="txtDBPassword">Database Password:</label>
+                <div class="controls">
+                    <input type="text" data-ng-model="testProjectConnection.TestPassword" required />
+                </div>
+            </div>
+            <div class="controls">
+                <button type="button" class="btn btn-small" data-ng-click="Cancel()">Cancel</button>
+                <button type="submit" class="btn btn-small btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+    <br />
+    <br />
+    <div data-ng-show="!showConnectionForm" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        <a data-ng-href="Projects" class="btn btn-link">Back to Test Project List</a>
+        <table class="table table-striped" data-ng-show="testProjects.length">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Project Name</th>
+                    <th>Project Description</th>
+                    <th>Project Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ testProject.TestProjectID }}</td>
+                    <td>{{ testProject.TestProjectName }}</td>
+                    <td>{{ testProject.TestProjectDescription }}</td>
+                    <td>{{ testProject.Status }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div data-ng-show="!showConnectionForm && !testProjectConnections.length" class="alert alert-danger" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        No database connections available. Please add a connection.
+    </div>
+    <div data-ng-show="!showConnectionForm && testProjectConnections.length" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        <div class="row">
+            <div class="span7">
+                <h4 data-ng-show="testProjectConnections.length">Test Project Connections</h4>
+            </div>
+            <div class="span4">
+                <div class="control-group" style="padding: 10px; border: 1px solid #ddd; border-radius: 10px; background-color: #eee">
+                    <label class="control-label" for="searchBox">Search :
+                        <input id="searchBox" type="search" data-ng-model="searchConnectionText" placeholder="search string" /></label>
+                </div>
+            </div>
+        </div>
+        <table class="table table-striped" data-ng-show="testProjectConnections.length">
+            <thead>
+                <tr>
+                    <!--<th>
+                        <button class="btn btn-link" data-ng-click="sortConnectionPredicate = 'ID'; reverse=!reverse">#</button></th>-->
+                    <th>
+                        <button class="btn btn-link" data-ng-click="sortConnectionPredicate = 'ConnectionType'; reverse=!reverse">Connection Type</button></th>
+                    <th>
+                        <button class="btn btn-link" data-ng-click="sortConnectionPredicate = 'ServerType'; reverse=!reverse">Server Type</button></th>
+                    <th>
+                        <button class="btn btn-link" data-ng-click="sortConnectionPredicate = 'ServerIP'; reverse=!reverse">Server IP</button></th>
+                    <th>
+                        <button class="btn btn-link" data-ng-click="sortConnectionPredicate = 'TestDBName'; reverse=!reverse">Database</button></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-ng-repeat="testProjectConnection in testProjectConnections | filter:searchConnectionText | orderBy:sortConnectionPredicate:reverse">
+                    <!--<td>{{ testProjectConnection.ID }}</td>-->
+                    <td>{{ testProjectConnection.ConnectionType }}</td>
+                    <td>{{ testProjectConnection.ServerType }}</td>
+                    <td>{{ testProjectConnection.ServerIP }}</td>
+                    <td>{{ testProjectConnection.TestDBName }}</td>
+                    <td>
+                        <button class="btn btn-link" data-ng-click="activeTestProjectConnection(testProjectConnection)">Edit</button>
+                        <span class="glyphicon glyphicon-remove"></span>
+                        <button class="btn btn-link" data-ng-click="delete(testProjectConnection)">Remove</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
